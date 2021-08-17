@@ -24,8 +24,9 @@
  * For more information, please refer to <https://unlicense.org>
  */
 
+#include <stdio.h>
 #include <elevator.h>
 
-int main(void) {
-    hello();
+void hello(void) {
+    printf("Hello, world!\n");
 }

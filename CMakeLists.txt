@@ -27,9 +27,18 @@
 cmake_minimum_required(VERSION 3.4)
 project(ElevatorThing)
 
+set(elevator_SRC_FILES
+        src/elevator.c
+        )
+
+add_library(elevator ${elevator_SRC_FILES})
+set_target_properties(elevator PROPERTIES C_STANDARD 99)
+target_include_directories(elevator PUBLIC include)
+
 set(main_SRC_FILES
         main.c
         )
 
 add_executable(main ${main_SRC_FILES})
 set_target_properties(main PROPERTIES C_STANDARD 99)
+target_link_libraries(main PRIVATE elevator)

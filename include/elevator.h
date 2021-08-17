@@ -24,8 +24,17 @@
  * For more information, please refer to <https://unlicense.org>
  */
 
-#include <elevator.h>
+#ifndef ELEVATOR_H
+#define ELEVATOR_H
 
-int main(void) {
-    hello();
-}
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+extern void hello();
+
+#ifdef __cplusplus
+} // extern "C"
+#endif
+
+#endif // #ifndef ELEVATOR_H
