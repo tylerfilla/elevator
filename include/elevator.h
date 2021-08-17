@@ -31,7 +31,7 @@
 extern "C" {
 #endif
 
-extern void hello();
+extern __declspec(dllexport) void hello();
 
 #ifdef __cplusplus
 } // extern "C"

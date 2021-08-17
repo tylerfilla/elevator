@@ -25,8 +25,25 @@
  */
 
 #include <stdio.h>
+#include <Windows.h>
 #include <elevator.h>
+
+static int called;
 
 void hello(void) {
     printf("Hello, world!\n");
+    printf("Was called? %s\n", (called ? "yes" : "no"));
+}
+
+BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpReserved) {
+    switch (fdwReason) {
+        case DLL_PROCESS_ATTACH:
+        case DLL_PROCESS_DETACH:
+        case DLL_THREAD_ATTACH:
+        case DLL_THREAD_DETACH:
+            called = 1;
+            return TRUE;
+        default:
+            return FALSE;
+    }
 }

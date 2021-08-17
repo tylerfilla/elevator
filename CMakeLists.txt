@@ -31,7 +31,7 @@ set(elevator_SRC_FILES
         src/elevator.c
         )
 
-add_library(elevator ${elevator_SRC_FILES})
+add_library(elevator SHARED ${elevator_SRC_FILES})
 set_target_properties(elevator PROPERTIES C_STANDARD 99)
 target_include_directories(elevator PUBLIC include)
 
