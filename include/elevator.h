@@ -1,5 +1,5 @@
 /*
- * Elevator Thing
+ * Elevator - Privilege elevation as a service ;)
  *
  * This is free and unencumbered software released into the public domain.
  *
@@ -20,21 +20,33 @@
  * AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
  * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- *
- * For more information, please refer to <https://unlicense.org>
  */
 
 #ifndef ELEVATOR_H
 #define ELEVATOR_H
 
 #ifdef __cplusplus
-extern "C" {
+#   define ELEVATOR_EXTERN extern "C"
+#else
+#   define ELEVATOR_EXTERN extern
 #endif
 
-extern __declspec(dllexport) void hello();
-
-#ifdef __cplusplus
-} // extern "C"
+#ifdef _ELEVATOR_INTERNAL
+#   define ELEVATOR_EXPORT __declspec(dllexport)
+#else
+#   define ELEVATOR_EXPORT __declspec(dllimport)
 #endif
+
+#define ELEVATOR_API ELEVATOR_EXTERN ELEVATOR_EXPORT
+#define ELEVATOR_CALL __cdecl
+
+/**
+ * Execute a shell command in an invisible elevated command prompt. The calling
+ * process itself, however, need not be elevated :O
+ *
+ * @param command The shell command to execute
+ * @return Either zero on success or a nonzero error code
+ */
+ELEVATOR_API int ELEVATOR_CALL elevator(const char* command);
 
 #endif // #ifndef ELEVATOR_H

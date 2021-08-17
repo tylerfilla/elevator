@@ -1,5 +1,5 @@
 #
-# Elevator Thing
+# Elevator - Privilege elevation as a service ;)
 #
 # This is free and unencumbered software released into the public domain.
 #
@@ -20,8 +20,6 @@
 # AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
 # ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-#
-# For more information, please refer to <https://unlicense.org>
 #
 
 cmake_minimum_required(VERSION 3.4)

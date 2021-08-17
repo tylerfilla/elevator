@@ -1,5 +1,5 @@
 /*
- * Elevator Thing
+ * Elevator - Privilege elevation as a service ;)
  *
  * This is free and unencumbered software released into the public domain.
  *
@@ -20,19 +20,16 @@
  * AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
  * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- *
- * For more information, please refer to <https://unlicense.org>
  */
 
-#include <stdio.h>
+#define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
+
+#define _ELEVATOR_INTERNAL
 #include <elevator.h>
 
-static int called;
-
-void hello(void) {
-    printf("Hello, world!\n");
-    printf("Was called? %s\n", (called ? "yes" : "no"));
+int elevator(const char* command) {
+    return 1;
 }
 
 BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpReserved) {
@@ -41,7 +38,6 @@ BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpReserved) {
         case DLL_PROCESS_DETACH:
         case DLL_THREAD_ATTACH:
         case DLL_THREAD_DETACH:
-            called = 1;
             return TRUE;
         default:
             return FALSE;
