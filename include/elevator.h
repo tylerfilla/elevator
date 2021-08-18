@@ -1,5 +1,5 @@
 /*
- * Elevator - Privilege elevation as a service ;)
+ * Elevator - Privilege elevation as a service
  *
  * This is free and unencumbered software released into the public domain.
  *
