@@ -2,4 +2,4 @@
   Elevator
 </h1>
 
-This is a C library DLL that uses the "mock directories" method to bypass Windows User Account Control (UAC) and get administrator rights noninteractively. The API is a single function that works like the `system(3)` call. This is just one of many implementations of this particular method, and it's also just one of many methods available for bypassing UAC. You'll need to do additional work to access `NT AUTHORITY\SYSTEM`.
+This is a DLL that uses the [mock directories method](https://daniels-it-blog.blogspot.com/2020/07/uac-bypass-via-dll-hijacking-and-mock.html) to bypass the User Account Control (UAC) dialog on Windows and get admin rights noninteractively. The API is a single function that works similarly to `system(3)`.
