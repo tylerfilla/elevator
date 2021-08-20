@@ -41,8 +41,8 @@
 #define ELEVATOR_CALL __cdecl
 
 /**
- * Execute a shell command in an invisible admin command prompt. The calling
- * process itself, however, need not be elevated :O
+ * Execute a shell command in an admin command prompt. The calling process
+ * itself, however, need not be elevated :O
  *
  * @param command The shell command to execute
  * @return Either zero on success or a nonzero error code
