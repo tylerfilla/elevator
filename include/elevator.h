@@ -1,5 +1,5 @@
 /*
- * Elevator - Privilege elevation as a service
+ * Elevator - It's like system(3) but it bypasses UAC
  *
  * This is free and unencumbered software released into the public domain.
  *
@@ -41,7 +41,7 @@
 #define ELEVATOR_CALL __cdecl
 
 /**
- * Execute a shell command in an invisible elevated command prompt. The calling
+ * Execute a shell command in an invisible admin command prompt. The calling
  * process itself, however, need not be elevated :O
  *
  * @param command The shell command to execute
