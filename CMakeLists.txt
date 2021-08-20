@@ -1,5 +1,5 @@
 #
-# Elevator - Privilege elevation as a service ;)
+# Elevator - It's like system(3) but it bypasses UAC
 #
 # This is free and unencumbered software released into the public domain.
 #
@@ -23,20 +23,8 @@
 #
 
 cmake_minimum_required(VERSION 3.4)
-project(ElevatorThing)
+project(Elevator)
 
-set(elevator_SRC_FILES
-        src/elevator.c
-        )
-
-add_library(elevator SHARED ${elevator_SRC_FILES})
+add_library(elevator SHARED src/elevator.c)
 set_target_properties(elevator PROPERTIES C_STANDARD 99)
 target_include_directories(elevator PUBLIC include)
-
-set(main_SRC_FILES
-        main.c
-        )
-
-add_executable(main ${main_SRC_FILES})
-set_target_properties(main PROPERTIES C_STANDARD 99)
-target_link_libraries(main PRIVATE elevator)
