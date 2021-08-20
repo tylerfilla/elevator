@@ -22,6 +22,8 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+#define _CRT_SECURE_NO_WARNINGS
+
 #include <stdlib.h>
 #include <string.h>
 
@@ -105,7 +107,7 @@ int elevator(const char* command) {
     system(command);
 
     // Deallocate full command line string
-    free(command);
+    free((void*) command);
 
     // Tear down the elevation environment
     return tearDownEnvironment();
