@@ -1,5 +1,5 @@
 /*
- * Elevator - Privilege elevation as a service
+ * Elevator - It's like system(3) but it bypasses UAC
  *
  * This is free and unencumbered software released into the public domain.
  *
